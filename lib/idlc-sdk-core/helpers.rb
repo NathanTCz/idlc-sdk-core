@@ -17,10 +17,12 @@ module Idlc
 
     def msg(message)
       stdout.print("#{message}\n")
+      stdout.flush
     end
 
     def debug(message)
       stdout.print("#{message}\n") if ENV['DEBUG']
+      stdout.flush
     end
 
     def stdout
