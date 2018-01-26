@@ -13,19 +13,19 @@ module Idlc
   SERVICES = {
     'build' => {
       'endpoint' => 'build.orchestrate.imageapi.com',
-      'stage' => 'dev'
+      'stage' => 'prod'
     },
     'config' => {
       'endpoint' => 'config.orchestrate.imageapi.com',
-      'stage' => 'dev'
+      'stage' => 'prod'
     },
     'deploy' => {
       'endpoint' => 'deploy.orchestrate.imageapi.com',
-      'stage' => 'dev'
+      'stage' => 'prod'
     },
     'status' => {
       'endpoint' => 'status.orchestrate.imageapi.com',
-      'stage' => 'dev'
+      'stage' => 'prod'
     }
   }.freeze
 end
