@@ -70,7 +70,9 @@ module Idlc
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true
       signature = sigv4_signature(method, url, payload)
-      request = http_request(method, uri.path, signature, payload)
+      path = uri.path
+      path = path + '?' + uri.query if uri.query
+      request = http_request(method, path, signature, payload)
 
       response = https.request(request)
       JSON.parse(response.body)
