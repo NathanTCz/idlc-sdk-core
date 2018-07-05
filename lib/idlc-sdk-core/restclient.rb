@@ -7,20 +7,43 @@ require 'aws-sdk-lambda'
 
 module Idlc
   class AWSLambdaProxy
+    include Helpers
+
     def fetch(request)
       client = Aws::Lambda::Client.new()
 
       request[:function] = "#{request[:service]}-" + Idlc::SERVICES[request[:service]]['stage'] + "-#{request[:lambda]}"
       request[:httpMethod] = request[:method]
 
-      resp = client.invoke({
-        function_name: "service-lambda-proxy",
-        invocation_type: "RequestResponse",
-        log_type: "None",
-        payload: request.to_json,
-      })
+      retries = 0
+      max_retries = 5
+      sleep_time = 5
+      exp_backoff = 2
+      result = nil
 
-      JSON.parse(JSON.parse(JSON.parse(resp.payload.string)['Payload'])['body'])
+      loop do
+        begin
+          resp = client.invoke({
+            function_name: "service-lambda-proxy",
+            invocation_type: "RequestResponse",
+            log_type: "None",
+            payload: request.to_json,
+          })
+
+          result = JSON.parse(JSON.parse(JSON.parse(resp.payload.string)['Payload'])['body'])
+          break
+        rescue Exception => e
+          break if retries >= max_retries
+          retries += 1
+          msg("RequestFailed: #{e} - Waiting #{sleep_time}s then retrying... (#{retries} of #{max_retries})")
+
+
+          sleep sleep_time
+          sleep_time *= exp_backoff # use an exponential backoff when retrying requests
+        end
+      end
+
+      result
     end
   end
 
