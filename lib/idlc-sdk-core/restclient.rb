@@ -106,7 +106,7 @@ module Idlc
       request.add_field 'content-type', 'application/json'
       request.add_field 'host', signature.headers['host']
       request.add_field 'x-amz-date', signature.headers['x-amz-date']
-      request.add_field 'x-amz-security-token', signature.headers['x-amz-security-token']
+      request.add_field 'x-amz-security-token', signature.headers['x-amz-security-token'] unless (signature.headers['x-amz-security-token'].nil?)
       request.add_field 'x-amz-content-sha256', signature.headers['x-amz-content-sha256']
       request.add_field 'authorization', signature.headers['authorization']
     end
