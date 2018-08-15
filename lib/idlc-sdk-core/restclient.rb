@@ -50,7 +50,8 @@ module Idlc
   class AWSRestClient
     def initialize(credentials=  {
           access_key_id: ENV['AWS_ACCESS_KEY_ID'],
-          secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
+          secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
+          session_token: ENV['AWS_SESSION_TOKEN']
         },
         region=ENV['AWS_REGION']
       )
@@ -102,10 +103,11 @@ module Idlc
     end
 
     def set_headers(request, signature)
-      request.add_field 'host', signature.headers['host']
       request.add_field 'content-type', 'application/json'
-      request.add_field 'x-amz-content-sha256', signature.headers['x-amz-content-sha256']
+      request.add_field 'host', signature.headers['host']
       request.add_field 'x-amz-date', signature.headers['x-amz-date']
+      request.add_field 'x-amz-security-token', signature.headers['x-amz-security-token']
+      request.add_field 'x-amz-content-sha256', signature.headers['x-amz-content-sha256']
       request.add_field 'authorization', signature.headers['authorization']
     end
 
@@ -134,7 +136,8 @@ module Idlc
         service: @service_name,
         region: @region,
         access_key_id: @credentials[:access_key_id],
-        secret_access_key: @credentials[:secret_access_key]
+        secret_access_key: @credentials[:secret_access_key],
+        session_token: @credentials[:session_token]
       )
     end
 
