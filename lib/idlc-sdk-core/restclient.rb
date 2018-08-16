@@ -48,6 +48,8 @@ module Idlc
   end
 
   class AWSRestClient
+    include Helpers
+
     def initialize(credentials=  {
           access_key_id: ENV['AWS_ACCESS_KEY_ID'],
           secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
@@ -68,17 +70,40 @@ module Idlc
       body = ''
       body = request['body'].to_json if request['body']
 
-      resp = send_signed_request(
-        request['method'],
-        "#{endpoint.strip}#{request['path']}",
-        body
-      )
+      retries = 0
+      max_retries = 5
+      sleep_time = 5
+      exp_backoff = 2
+      result = nil
 
-      # if request has 'outfile' param, write response to file
-      to_file(resp, request['outfile']) if request['outfile']
+      loop do
+        begin
+          resp = send_signed_request(
+            request['method'],
+            "#{endpoint.strip}#{request['path']}",
+            body
+          )
 
-      # return response obj
-      resp
+          result = JSON.parse(resp.body)
+          message = "status: #{resp.code}, message: #{result['message']}"
+          raise message unless resp.code == '200'
+          break
+        rescue Exception => e
+          break if retries >= max_retries
+          retries += 1
+          msg("RequestFailed: #{e} - Waiting #{sleep_time}s then retrying... (#{retries} of #{max_retries})")
+
+
+          sleep sleep_time
+          sleep_time *= exp_backoff # use an exponential backoff when retrying requests
+        end
+      end
+
+      # if request has 'outfile' param, write response body to file
+      to_file(result, request['outfile']) if request['outfile']
+
+      # return response body obj
+      result
     end
 
     def to_file(obj, filename)
@@ -99,7 +124,6 @@ module Idlc
       request = http_request(method, path, signature, payload)
 
       response = https.request(request)
-      JSON.parse(response.body)
     end
 
     def set_headers(request, signature)
