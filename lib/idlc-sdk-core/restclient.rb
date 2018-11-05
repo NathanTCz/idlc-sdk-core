@@ -5,6 +5,9 @@ require 'aws-sdk-lambda'
 
 # Idlc::SERVICES object is loaded from core lib
 
+# default region
+ENV['AWS_REGION'] = 'us-east-1' unless ENV['AWS_REGION']
+
 module Idlc
   class AWSLambdaProxy
     include Helpers
