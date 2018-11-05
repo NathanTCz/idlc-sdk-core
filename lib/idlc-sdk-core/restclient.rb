@@ -11,8 +11,10 @@ module Idlc
 
     def fetch(request)
       client = Aws::Lambda::Client.new()
+      region = ENV['AWS_REGION']
+      backend_services = Idlc::SERVICES[region]
 
-      request[:function] = "#{request[:service]}-" + Idlc::SERVICES[request[:service]]['stage'] + "-#{request[:lambda]}"
+      request[:function] = "#{request[:service]}-" + backend_services[request[:service]]['stage'] + "-#{request[:lambda]}"
       request[:httpMethod] = request[:method]
 
       retries = 0
@@ -60,12 +62,13 @@ module Idlc
       @service_name = 'execute-api'
       @credentials = credentials
       @region = region
+      @backend_services = Idlc::SERVICES[region]
     end
 
     def fetch(request)
       request = JSON.parse(request)
 
-      endpoint = 'https://' + Idlc::SERVICES[request['service']]['endpoint'] + '/' + Idlc::SERVICES[request['service']]['stage']
+      endpoint = 'https://' + @backend_services[request['service']]['endpoint'] + '/' + @backend_services[request['service']]['stage']
 
       body = ''
       body = request['body'].to_json if request['body']
