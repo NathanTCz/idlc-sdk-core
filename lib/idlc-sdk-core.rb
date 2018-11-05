@@ -14,7 +14,8 @@ module Idlc
     'us-east-1' => {
       'build' => {
         'endpoint' => 'build.orchestrate.imageapi.com',
-        'stage' => 'prod'
+        'stage' => 'prod',
+        'publish_bucket' => 'service-build-prod-build-artifacts'
       },
       'config' => {
         'endpoint' => 'config.orchestrate.imageapi.com',
@@ -36,7 +37,8 @@ module Idlc
     'us-gov-west-1' => {
       'build' => {
         'endpoint' => 'build.orchestrate-us-gov.imageapi.com',
-        'stage' => 'govcloud'
+        'stage' => 'govcloud',
+        'publish_bucket' => 'service-build-govcloud-build-artifacts'
       },
       'config' => {
         'endpoint' => 'config.orchestrate-us-gov.imageapi.com',
