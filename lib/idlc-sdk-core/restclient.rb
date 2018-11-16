@@ -91,7 +91,7 @@ module Idlc
           )
 
           result = JSON.parse(resp.body)
-          message = "status: #{resp.code}, message: #{result['message']}"
+          message = "status: #{resp.code}, response: #{result}"
           raise message unless resp.code == '200'
           break
         rescue Exception => e
