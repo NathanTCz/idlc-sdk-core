@@ -34,5 +34,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'aws-sdk-lambda'
   spec.add_runtime_dependency 'aws-sigv4'
-  spec.add_runtime_dependency 'rubyzip'
+  spec.add_runtime_dependency 'rubyzip', '1.3.0'
 end
